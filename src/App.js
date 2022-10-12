@@ -14,8 +14,8 @@ function usePrevious(value) {
 
 const FILTER_MAP = {
   All: () => true,
-  Active: (task) => !task.completed,
-  Completed: (task) => task.completed
+  Active: (task) => !task.done,
+  Completed: (task) => task.done
 };
 
 
@@ -25,22 +25,23 @@ const FILTER_NAMES = Object.keys(FILTER_MAP);
 function App(props) {
   const [tasks, setTasks] = useState(props.tasks);
 
-  const addTask = (name) => {
-    const newTask = {id: `todo-${nanoid()}`, name, completed: ''};
+  const addTask = (label) => {
+    const newTask = {id: `todo-${nanoid()}`, label, done: false};
     setTasks([...tasks, newTask]);
+    console.log(tasks)
   };
 
   const [filter, setFilter] = useState('All');
   console.log(FILTER_MAP[filter]);
 
-  const filterList = FILTER_NAMES.map((name) => {
-    return <FilterButton key= {name} name= {name} isPressed= {name=== filter} setFilter= {setFilter} />
+  const filterList = FILTER_NAMES.map((label) => {
+    return <FilterButton key= {label} name= {label} isPressed= {label=== filter} setFilter= {setFilter} />
   })
 
   function toggleTaskCompleted(id) {
     const updatedTask = tasks.map((task) => {
       if(id === task.id) {
-        return {...task, completed: !task.completed};
+        return {...task, completed: !task.done};
       }
       return task;
     })
@@ -56,7 +57,7 @@ function App(props) {
   const editTask = (id, newName) => {
     const editedTasksList = tasks.map((task) => {
       if(id === task.id) {
-        return {...task, name: newName}
+        return {...task, label: newName}
       }
       return task;
     });
@@ -68,8 +69,8 @@ function App(props) {
   .map((task) => (
     <Todo
       id={task.id}
-      name={task.name}
-      completed={task.completed}
+      name={task.label}
+      completed={task.done}
       key={task.id}
       toggleTaskCompleted={toggleTaskCompleted}
       deleteTask={deleteTask}
@@ -88,6 +89,35 @@ function App(props) {
       listHeadingRef.current.focus();
     }
   }, [tasks.length, prevTaskLength]);
+
+  useEffect(() => {
+
+  postTodoAsync();    
+  }, [tasks])
+
+  const postTodoAsync = () => {
+    fetch('https://assets.breatheco.de/apis/fake/todos/user/mau_light', {
+      method: "PUT",
+      body: JSON.stringify(tasks),
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+    .then(resp => {
+        console.log(resp.ok); // will be true if the response is successfull
+        console.log(resp.status); // the status code = 200 or code = 400 etc.
+        console.log(resp.text()); // will try return the exact result as string
+        return resp.json(); // (returns promise) will try to parse the result as json as return a promise that you can .then for results
+    })
+    .then(data => {
+        //here is were your code should start after the fetch finishes
+        console.log(data); //this will print on the console the exact object received from the server
+    })
+    .catch(error => {
+        //error handling
+        console.log(error);
+    });
+  }
 
   return (
     <div className="todoapp stack-large">

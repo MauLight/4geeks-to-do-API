@@ -6,10 +6,10 @@ import './index.css';
 import App from './App';
 
 const DATA = [
-  {id: 'todo-1', name: 'Write first act of outline', completed: true},
-  {id: 'todo-2', name: 'Write first part of second act of outline', completed: false},
-  {id: 'todo-3', name: 'Write second part of second act of outline', completed: false},
-  {id: 'todo-4', name: 'Write third act of outline', completed: false},
+  {id: 'todo-1', label: 'Write first act of outline', done: true},
+  {id: 'todo-2', label: 'Write first part of second act of outline', done: false},
+  {id: 'todo-3', label: 'Write second part of second act of outline', done: false},
+  {id: 'todo-4', label: 'Write third act of outline', done: false},
 ];
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
